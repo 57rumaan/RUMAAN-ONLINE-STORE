@@ -16,10 +16,6 @@ import NotFound from "@/pages/not-found";
 
 // Admin Pages
 import AdminDashboard from "@/pages/admin/AdminDashboard";
-import ProductsTab from "@/pages/admin/ProductsTab";
-import CategoriesTab from "@/pages/admin/CategoriesTab";
-import OrdersTab from "@/pages/admin/OrdersTab";
-import ReviewsTab from "@/pages/admin/ReviewsTab";
 
 const queryClient = new QueryClient();
 
@@ -56,10 +52,6 @@ function Router() {
 
       {/* Admin Routes */}
       <AdminRoute path="/admin" component={AdminDashboard} />
-      <AdminRoute path="/admin/products" component={ProductsTab} />
-      <AdminRoute path="/admin/categories" component={CategoriesTab} />
-      <AdminRoute path="/admin/orders" component={OrdersTab} />
-      <AdminRoute path="/admin/reviews" component={ReviewsTab} />
 
       {/* 404 */}
       <StoreRoute component={NotFound} />
