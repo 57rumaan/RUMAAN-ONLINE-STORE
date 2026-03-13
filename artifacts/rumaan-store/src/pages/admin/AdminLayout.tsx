@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Package, ListOrdered, MessageSquare, Tags, LayoutDashboard, ArrowLeft } from "lucide-react";
+import { Package, ListOrdered, MessageSquare, Tags, LayoutDashboard, ArrowLeft, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AdminDashboard from "./AdminDashboard";
 import ProductsTab from "./ProductsTab";
 import CategoriesTab from "./CategoriesTab";
 import OrdersTab from "./OrdersTab";
 import ReviewsTab from "./ReviewsTab";
+import AdminLogin from "./AdminLogin";
 
 const tabs = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
@@ -17,7 +18,19 @@ const tabs = [
 ];
 
 export default function AdminLayout({ children }: { children?: React.ReactNode }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => sessionStorage.getItem("rumaan_admin_auth") === "true"
+  );
   const [activeTab, setActiveTab] = useState("dashboard");
+
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
+  }
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("rumaan_admin_auth");
+    setIsAuthenticated(false);
+  };
 
   const renderTab = () => {
     switch (activeTab) {
@@ -40,6 +53,15 @@ export default function AdminLayout({ children }: { children?: React.ReactNode }
         </Link>
         <div className="w-px h-6 bg-border" />
         <span className="font-display font-bold text-primary">Store Admin</span>
+        <div className="ml-auto">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-colors px-3 py-1.5 rounded-lg hover:bg-destructive/10"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:block">Logout</span>
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-1">
