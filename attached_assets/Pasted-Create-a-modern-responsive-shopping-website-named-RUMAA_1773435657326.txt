@@ -1,0 +1,87 @@
+Create a modern responsive shopping website named “RUMAAN ONLINE STORE”.
+Header Layout
+On the top header, show a cart icon first and then the text “RUMAAN ONLINE STORE”.
+On the right side of the header, add:
+Search icon / search bar
+Profile icon
+Cart icon
+On the left side, add a menu (hamburger icon).
+Menu Options
+The menu should contain 3 options:
+Home → redirects to the main page.
+Category → shows all product categories.
+Contact Us → shows the store contact details.
+Contact Us Page
+Show the following information:
+Name
+Phone Number
+Email
+Address
+Home Page
+Display random products in a grid layout.
+Products should have:
+Image
+Name
+Price in PKR
+Short description
+Reviews section
+Categories
+Create these categories:
+Mobile Phones
+Gaming Accessories
+Mobile Accessories
+Deals
+Each category page must include:
+Search bar
+Price range filter
+Product Reviews
+Under every product:
+Add comments & reviews section
+Customers should be able to:
+Write review
+Upload pictures with their review
+Ordering System
+Normal Products
+For most products:
+Do NOT add a Buy button.
+Add “Order via WhatsApp” button.
+When clicked, it should open WhatsApp with:
+Product name
+Product price
+Product link
+Pre-written message for order.
+Special Categories (Online Purchase)
+For these categories:
+Mobile Phones
+Gaming Accessories
+Mobile Accessories
+Add a BUY button.
+When clicked:
+Show a payment form with bank account details and the following fields:
+PAYMENT RECEIPT ID
+YOUR FULL NAME
+YOUR PHONE NUMBER
+YOUR ADDRESS
+After submission:
+The order details should go to the Admin Panel.
+Deals Category
+Only show product images.
+No price.
+No Buy button.
+No WhatsApp order option.
+Currency
+All product prices must be shown in PKR (Pakistani Rupees).
+Admin Panel
+Create a full admin dashboard where the admin can:
+Add products
+Edit products
+Delete products
+Change products daily
+View orders submitted from the payment form
+Manage categories
+View customer reviews
+Design
+Mobile friendly
+Modern e-commerce style
+Fast loading
+Clean UI with product cards

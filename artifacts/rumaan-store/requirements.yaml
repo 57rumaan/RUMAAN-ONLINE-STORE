@@ -1,0 +1,20 @@
+packages:
+  "framer-motion": "For page transitions and interactive element animations"
+  "react-hook-form": "For complex form handling in checkout and admin"
+  "@hookform/resolvers": "For Zod validation integration with forms"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to merge tailwind classes safely"
+  "date-fns": "For formatting dates in admin panel and reviews"
+
+images:
+  - path: "artifacts/rumaan-store/public/images/hero-banner.png"
+    description: "High-end abstract 3D geometric background in deep teal and cyan with soft lighting, suitable for a modern tech e-commerce hero section"
+    aspect_ratio: "16:9"
+  - path: "artifacts/rumaan-store/public/images/logo-icon.png"
+    description: "Minimalist letter R logo mark, modern e-commerce branding, cyan and deep blue, transparent background"
+    aspect_ratio: "1:1"
+
+notes:
+  - API hooks are imported from @workspace/api-client-react
+  - Currency is PKR
+  - Modals and Tabs are built using lightweight custom state to ensure self-containment
