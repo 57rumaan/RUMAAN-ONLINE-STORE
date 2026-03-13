@@ -34,11 +34,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Menu className="w-6 h-6" />
             </button>
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white font-display font-bold shadow-md group-hover:scale-105 transition-transform">
-                R
-              </div>
-              <span className="font-display font-bold text-lg tracking-tight hidden sm:block">
-                RUMAAN STORE
+              <ShoppingBag className="w-6 h-6 text-primary" />
+              <span className="font-display font-bold text-lg tracking-tight">
+                57 RUMAAN STORE
               </span>
             </Link>
           </div>
