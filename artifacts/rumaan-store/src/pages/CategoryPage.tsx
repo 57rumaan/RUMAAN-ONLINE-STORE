@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useGetProducts, useGetCategories } from "@workspace/api-client-react";
 import { ProductCard } from "@/components/ProductCard";
 import { Input } from "@/components/ui";
-import { Search, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft, SlidersHorizontal } from "lucide-react";
 
 type Category = {
   id: number;
@@ -18,11 +18,15 @@ type Category = {
 export default function CategoryPage() {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [search, setSearch] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
 
   const { data: categories, isLoading: loadingCategories } = useGetCategories();
   const { data: products, isLoading: loadingProducts } = useGetProducts({
     categoryId: activeCategory?.id,
     search: search || undefined,
+    minPrice: minPrice ? parseInt(minPrice) : undefined,
+    maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
   });
 
   // — Category listing view —
@@ -70,7 +74,7 @@ export default function CategoryPage() {
       {/* Back + heading */}
       <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={() => { setActiveCategory(null); setSearch(""); }}
+          onClick={() => { setActiveCategory(null); setSearch(""); setMinPrice(""); setMaxPrice(""); }}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -78,23 +82,54 @@ export default function CategoryPage() {
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-display font-bold">{activeCategory.name}</h1>
-          <p className="text-muted-foreground mt-1">
-            {loadingProducts ? "Loading..." : `${products?.length ?? 0} products`}
-          </p>
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-display font-bold">{activeCategory.name}</h1>
+            <p className="text-muted-foreground mt-1">
+              {loadingProducts ? "Loading..." : `${products?.length ?? 0} products`}
+            </p>
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search in this category..."
+              className="pl-9"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
 
-        {/* Search */}
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        {/* Price Filter */}
+        <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3">
+          <SlidersHorizontal className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <span className="text-sm font-medium text-muted-foreground flex-shrink-0">Price (PKR):</span>
           <Input
-            placeholder="Search in this category..."
-            className="pl-9"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            type="number"
+            placeholder="Min"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            className="h-8 text-sm w-28"
           />
+          <span className="text-muted-foreground text-sm">—</span>
+          <Input
+            type="number"
+            placeholder="Max"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            className="h-8 text-sm w-28"
+          />
+          {(minPrice || maxPrice) && (
+            <button
+              onClick={() => { setMinPrice(""); setMaxPrice(""); }}
+              className="text-xs text-primary hover:underline ml-auto flex-shrink-0"
+            >
+              Clear
+            </button>
+          )}
         </div>
       </div>
 

@@ -3,7 +3,7 @@ import { useParams } from "wouter";
 import { useGetProduct, useGetCategories, useCreateOrder, useGetReviews, useCreateReview } from "@workspace/api-client-react";
 import { formatPKR } from "@/lib/utils";
 import { Button, Modal, Input, Textarea, Badge } from "@/components/ui";
-import { MessageCircle, ShoppingBag, Star, ShieldCheck, ChevronRight, CheckCircle2 } from "lucide-react";
+import { MessageCircle, ShoppingBag, Star, ChevronRight, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ProductDetail() {
@@ -134,10 +134,6 @@ export default function ProductDetail() {
           </div>
 
           <div className="space-y-4 mb-10">
-            <div className="flex items-center gap-3 text-sm font-medium">
-              <ShieldCheck className="w-5 h-5 text-green-500" />
-              <span>1 Year Official Warranty</span>
-            </div>
             <div className="flex items-center gap-3 text-sm font-medium">
               <CheckCircle2 className="w-5 h-5 text-primary" />
               <span>100% Authentic Product</span>
