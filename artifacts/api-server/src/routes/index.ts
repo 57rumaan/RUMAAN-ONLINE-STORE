@@ -5,9 +5,11 @@ import categoriesRouter from "./categories";
 import ordersRouter from "./orders";
 import reviewsRouter from "./reviews";
 import adminRouter from "./admin";
+import authRouter from "./auth";
 
 const router: IRouter = Router();
 
+router.use(authRouter);
 router.use(healthRouter);
 router.use(productsRouter);
 router.use(categoriesRouter);
