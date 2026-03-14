@@ -229,15 +229,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </>
                   )}
 
-                  <div className="my-3 border-t border-border" />
-
-                  <Link
-                    href="/admin"
-                    className="flex items-center justify-between px-4 py-3 rounded-xl text-foreground/80 hover:bg-muted font-medium"
-                  >
-                    Admin Panel
-                    <ChevronRight className="w-4 h-4 opacity-50" />
-                  </Link>
                 </nav>
               </div>
             </motion.div>
