@@ -60,6 +60,7 @@ export interface Order {
   productName: string;
   productPrice: number;
   receiptId: string;
+  receiptImage?: string | null;
   customerName: string;
   customerPhone: string;
   customerAddress: string;
@@ -70,6 +71,7 @@ export interface Order {
 export interface CreateOrderInput {
   productId: number;
   receiptId: string;
+  receiptImage?: string | null;
   customerName: string;
   customerPhone: string;
   customerAddress: string;
@@ -106,12 +108,41 @@ export interface AdminStats {
   totalCategories: number;
 }
 
+export interface AnalyticsOrderPerDay {
+  date: string;
+  count: number;
+  revenue: number;
+}
+
+export interface AnalyticsTopProduct {
+  productId: number;
+  productName: string;
+  orderCount: number;
+  revenue: number;
+}
+
+export interface AnalyticsStatusBreakdown {
+  status: string;
+  count: number;
+}
+
+export interface AdminAnalytics {
+  totalRevenue: number;
+  ordersPerDay: AnalyticsOrderPerDay[];
+  topProducts: AnalyticsTopProduct[];
+  statusBreakdown: AnalyticsStatusBreakdown[];
+}
+
 export type GetProductsParams = {
   categoryId?: number;
   search?: string;
   minPrice?: number;
   maxPrice?: number;
   featured?: boolean;
+};
+
+export type GetOrdersByPhoneParams = {
+  phone: string;
 };
 
 export type GetReviewsParams = {

@@ -17,12 +17,14 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AdminAnalytics,
   AdminStats,
   Category,
   CreateCategoryInput,
   CreateOrderInput,
   CreateProductInput,
   CreateReviewInput,
+  GetOrdersByPhoneParams,
   GetProductsParams,
   GetReviewsParams,
   HealthStatus,
@@ -887,6 +889,103 @@ export const useDeleteCategory = <
 };
 
 /**
+ * @summary Get orders by customer phone number
+ */
+export const getGetOrdersByPhoneUrl = (params: GetOrdersByPhoneParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/orders/by-phone?${stringifiedParams}`
+    : `/api/orders/by-phone`;
+};
+
+export const getOrdersByPhone = async (
+  params: GetOrdersByPhoneParams,
+  options?: RequestInit,
+): Promise<Order[]> => {
+  return customFetch<Order[]>(getGetOrdersByPhoneUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetOrdersByPhoneQueryKey = (
+  params?: GetOrdersByPhoneParams,
+) => {
+  return [`/api/orders/by-phone`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetOrdersByPhoneQueryOptions = <
+  TData = Awaited<ReturnType<typeof getOrdersByPhone>>,
+  TError = ErrorType<unknown>,
+>(
+  params: GetOrdersByPhoneParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getOrdersByPhone>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetOrdersByPhoneQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getOrdersByPhone>>
+  > = ({ signal }) => getOrdersByPhone(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getOrdersByPhone>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetOrdersByPhoneQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getOrdersByPhone>>
+>;
+export type GetOrdersByPhoneQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get orders by customer phone number
+ */
+
+export function useGetOrdersByPhone<
+  TData = Awaited<ReturnType<typeof getOrdersByPhone>>,
+  TError = ErrorType<unknown>,
+>(
+  params: GetOrdersByPhoneParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getOrdersByPhone>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetOrdersByPhoneQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
  * @summary Get all orders (admin)
  */
 export const getGetOrdersUrl = () => {
@@ -1540,6 +1639,81 @@ export function useGetAdminStats<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetAdminStatsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get admin analytics data
+ */
+export const getGetAdminAnalyticsUrl = () => {
+  return `/api/admin/analytics`;
+};
+
+export const getAdminAnalytics = async (
+  options?: RequestInit,
+): Promise<AdminAnalytics> => {
+  return customFetch<AdminAnalytics>(getGetAdminAnalyticsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAdminAnalyticsQueryKey = () => {
+  return [`/api/admin/analytics`] as const;
+};
+
+export const getGetAdminAnalyticsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminAnalytics>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminAnalytics>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAdminAnalyticsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAdminAnalytics>>
+  > = ({ signal }) => getAdminAnalytics({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminAnalytics>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdminAnalyticsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminAnalytics>>
+>;
+export type GetAdminAnalyticsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get admin analytics data
+ */
+
+export function useGetAdminAnalytics<
+  TData = Awaited<ReturnType<typeof getAdminAnalytics>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAdminAnalytics>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdminAnalyticsQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

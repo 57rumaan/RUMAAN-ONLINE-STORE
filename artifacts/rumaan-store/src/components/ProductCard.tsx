@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { formatPKR } from "@/lib/utils";
 import { Star, ShoppingCart } from "lucide-react";
-import type { Product } from "@workspace/api-client-react/src/generated/api.schemas";
+import type { Product } from "@workspace/api-client-react";
 import { motion } from "framer-motion";
 
 export function ProductCard({ product }: { product: Product }) {

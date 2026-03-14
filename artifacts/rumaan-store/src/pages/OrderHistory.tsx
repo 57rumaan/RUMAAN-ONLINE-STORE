@@ -15,7 +15,10 @@ export default function OrderHistory() {
   const [phoneInput, setPhoneInput] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
 
-  const { data: orders, isLoading, isFetched } = useGetOrdersByPhone(searchPhone);
+  const { data: orders, isLoading, isFetched } = useGetOrdersByPhone(
+    { phone: searchPhone },
+    { query: { enabled: !!searchPhone } as any }
+  );
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

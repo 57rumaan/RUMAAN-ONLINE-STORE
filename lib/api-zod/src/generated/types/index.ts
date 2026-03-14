@@ -6,12 +6,17 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./adminAnalytics";
 export * from "./adminStats";
+export * from "./analyticsOrderPerDay";
+export * from "./analyticsStatusBreakdown";
+export * from "./analyticsTopProduct";
 export * from "./category";
 export * from "./createCategoryInput";
 export * from "./createOrderInput";
 export * from "./createProductInput";
 export * from "./createReviewInput";
+export * from "./getOrdersByPhoneParams";
 export * from "./getProductsParams";
 export * from "./getReviewsParams";
 export * from "./healthStatus";

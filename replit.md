@@ -74,10 +74,12 @@ A Pakistani e-commerce shopping website with:
 - `GET/POST /api/categories` — list/create categories
 - `PUT/DELETE /api/categories/:id` — category CRUD
 - `GET/POST /api/orders` — list/submit orders
+- `GET /api/orders/by-phone?phone=…` — order history lookup by phone
 - `GET/PUT /api/orders/:id` — get/update order
 - `GET/POST /api/reviews` — list/submit reviews (filter by productId)
 - `DELETE /api/reviews/:id` — delete review
 - `GET /api/admin/stats` — dashboard stats
+- `GET /api/admin/analytics` — analytics data (revenue, orders/day, top products, status breakdown)
 
 ## TypeScript & Composite Projects
 

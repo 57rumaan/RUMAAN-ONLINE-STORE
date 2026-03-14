@@ -211,6 +211,27 @@ paths:
         "204":
           description: Deleted
 
+  /orders/by-phone:
+    get:
+      operationId: getOrdersByPhone
+      tags: [orders]
+      summary: Get orders by customer phone number
+      parameters:
+        - name: phone
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of orders for the given phone number
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
   /orders:
     get:
       operationId: getOrders
@@ -350,6 +371,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/AdminStats"
 
+  /admin/analytics:
+    get:
+      operationId: getAdminAnalytics
+      tags: [products]
+      summary: Get admin analytics data
+      responses:
+        "200":
+          description: Admin analytics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAnalytics"
+
 components:
   schemas:
     HealthStatus:
@@ -488,6 +522,9 @@ components:
           type: number
         receiptId:
           type: string
+        receiptImage:
+          type: string
+          nullable: true
         customerName:
           type: string
         customerPhone:
@@ -517,6 +554,9 @@ components:
           type: integer
         receiptId:
           type: string
+        receiptImage:
+          type: string
+          nullable: true
         customerName:
           type: string
         customerPhone:
@@ -609,3 +649,68 @@ components:
         - totalReviews
         - pendingOrders
         - totalCategories
+
+    AnalyticsOrderPerDay:
+      type: object
+      properties:
+        date:
+          type: string
+        count:
+          type: integer
+        revenue:
+          type: number
+      required:
+        - date
+        - count
+        - revenue
+
+    AnalyticsTopProduct:
+      type: object
+      properties:
+        productId:
+          type: integer
+        productName:
+          type: string
+        orderCount:
+          type: integer
+        revenue:
+          type: number
+      required:
+        - productId
+        - productName
+        - orderCount
+        - revenue
+
+    AnalyticsStatusBreakdown:
+      type: object
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+      required:
+        - status
+        - count
+
+    AdminAnalytics:
+      type: object
+      properties:
+        totalRevenue:
+          type: number
+        ordersPerDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsOrderPerDay"
+        topProducts:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsTopProduct"
+        statusBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsStatusBreakdown"
+      required:
+        - totalRevenue
+        - ordersPerDay
+        - topProducts
+        - statusBreakdown

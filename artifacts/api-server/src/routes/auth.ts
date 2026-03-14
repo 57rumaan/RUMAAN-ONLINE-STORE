@@ -22,7 +22,7 @@ function signToken(userId: number) {
 
 function getUserFromToken(token: string): number | null {
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as { sub: number };
+    const payload = jwt.verify(token, JWT_SECRET) as unknown as { sub: number };
     return payload.sub;
   } catch {
     return null;

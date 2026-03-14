@@ -58,15 +58,3 @@ export const useDeleteProductMedia = () => {
   });
 };
 
-export const useGetAdminAnalytics = () =>
-  useQuery<AnalyticsData>({
-    queryKey: ["admin-analytics"],
-    queryFn: () => customFetch("/api/admin/analytics"),
-  });
-
-export const useGetOrdersByPhone = (phone: string) =>
-  useQuery<OrderWithDetails[]>({
-    queryKey: ["orders-by-phone", phone],
-    queryFn: () => customFetch(`/api/orders/by-phone?phone=${encodeURIComponent(phone)}`),
-    enabled: phone.length >= 7,
-  });

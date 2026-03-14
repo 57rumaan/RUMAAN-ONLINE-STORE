@@ -12,10 +12,10 @@ export interface Order {
   productName: string;
   productPrice: number;
   receiptId: string;
+  receiptImage?: string | null;
   customerName: string;
   customerPhone: string;
   customerAddress: string;
-  receiptImage?: string | null;
   status: string;
   createdAt: string;
 }

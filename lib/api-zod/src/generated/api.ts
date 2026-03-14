@@ -176,6 +176,28 @@ export const DeleteCategoryParams = zod.object({
 });
 
 /**
+ * @summary Get orders by customer phone number
+ */
+export const GetOrdersByPhoneQueryParams = zod.object({
+  phone: zod.coerce.string(),
+});
+
+export const GetOrdersByPhoneResponseItem = zod.object({
+  id: zod.number(),
+  productId: zod.number(),
+  productName: zod.string(),
+  productPrice: zod.number(),
+  receiptId: zod.string(),
+  receiptImage: zod.string().nullish(),
+  customerName: zod.string(),
+  customerPhone: zod.string(),
+  customerAddress: zod.string(),
+  status: zod.string(),
+  createdAt: zod.string(),
+});
+export const GetOrdersByPhoneResponse = zod.array(GetOrdersByPhoneResponseItem);
+
+/**
  * @summary Get all orders (admin)
  */
 export const GetOrdersResponseItem = zod.object({
@@ -184,10 +206,10 @@ export const GetOrdersResponseItem = zod.object({
   productName: zod.string(),
   productPrice: zod.number(),
   receiptId: zod.string(),
+  receiptImage: zod.string().nullish(),
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
-  receiptImage: zod.string().nullable().optional(),
   status: zod.string(),
   createdAt: zod.string(),
 });
@@ -199,10 +221,10 @@ export const GetOrdersResponse = zod.array(GetOrdersResponseItem);
 export const CreateOrderBody = zod.object({
   productId: zod.number(),
   receiptId: zod.string(),
+  receiptImage: zod.string().nullish(),
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
-  receiptImage: zod.string().optional(),
 });
 
 /**
@@ -218,10 +240,10 @@ export const GetOrderResponse = zod.object({
   productName: zod.string(),
   productPrice: zod.number(),
   receiptId: zod.string(),
+  receiptImage: zod.string().nullish(),
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
-  receiptImage: zod.string().nullable().optional(),
   status: zod.string(),
   createdAt: zod.string(),
 });
@@ -243,10 +265,10 @@ export const UpdateOrderStatusResponse = zod.object({
   productName: zod.string(),
   productPrice: zod.number(),
   receiptId: zod.string(),
+  receiptImage: zod.string().nullish(),
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
-  receiptImage: zod.string().nullable().optional(),
   status: zod.string(),
   createdAt: zod.string(),
 });
@@ -297,4 +319,32 @@ export const GetAdminStatsResponse = zod.object({
   totalReviews: zod.number(),
   pendingOrders: zod.number(),
   totalCategories: zod.number(),
+});
+
+/**
+ * @summary Get admin analytics data
+ */
+export const GetAdminAnalyticsResponse = zod.object({
+  totalRevenue: zod.number(),
+  ordersPerDay: zod.array(
+    zod.object({
+      date: zod.string(),
+      count: zod.number(),
+      revenue: zod.number(),
+    }),
+  ),
+  topProducts: zod.array(
+    zod.object({
+      productId: zod.number(),
+      productName: zod.string(),
+      orderCount: zod.number(),
+      revenue: zod.number(),
+    }),
+  ),
+  statusBreakdown: zod.array(
+    zod.object({
+      status: zod.string(),
+      count: zod.number(),
+    }),
+  ),
 });

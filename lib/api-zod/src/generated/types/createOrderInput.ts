@@ -9,8 +9,8 @@
 export interface CreateOrderInput {
   productId: number;
   receiptId: string;
+  receiptImage?: string | null;
   customerName: string;
   customerPhone: string;
   customerAddress: string;
-  receiptImage?: string;
 }
