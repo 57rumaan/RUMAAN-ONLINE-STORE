@@ -13,6 +13,36 @@ import {
 
 const router: IRouter = Router();
 
+router.get("/orders/by-phone", async (req, res): Promise<void> => {
+  const phone = req.query.phone as string;
+  if (!phone) { res.status(400).json({ error: "phone is required" }); return; }
+  const orders = await db
+    .select({
+      id: ordersTable.id,
+      productId: ordersTable.productId,
+      productName: productsTable.name,
+      productPrice: productsTable.price,
+      receiptId: ordersTable.receiptId,
+      customerName: ordersTable.customerName,
+      customerPhone: ordersTable.customerPhone,
+      customerAddress: ordersTable.customerAddress,
+      receiptImage: ordersTable.receiptImage,
+      status: ordersTable.status,
+      createdAt: ordersTable.createdAt,
+    })
+    .from(ordersTable)
+    .leftJoin(productsTable, eq(ordersTable.productId, productsTable.id))
+    .where(eq(ordersTable.customerPhone, phone))
+    .orderBy(ordersTable.createdAt);
+  const mapped = orders.map((o) => ({
+    ...o,
+    productName: o.productName ?? "Unknown Product",
+    productPrice: parseFloat(o.productPrice ?? "0"),
+    createdAt: o.createdAt?.toISOString() ?? new Date().toISOString(),
+  }));
+  res.json(mapped);
+});
+
 router.get("/orders", async (_req, res): Promise<void> => {
   const orders = await db
     .select({

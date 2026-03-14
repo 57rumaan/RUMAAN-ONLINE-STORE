@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Package, ListOrdered, MessageSquare, Tags, LayoutDashboard, ArrowLeft, LogOut } from "lucide-react";
+import { Package, ListOrdered, MessageSquare, Tags, LayoutDashboard, ArrowLeft, LogOut, BarChart2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AdminDashboard from "./AdminDashboard";
 import ProductsTab from "./ProductsTab";
 import CategoriesTab from "./CategoriesTab";
 import OrdersTab from "./OrdersTab";
 import ReviewsTab from "./ReviewsTab";
+import AnalyticsTab from "./AnalyticsTab";
 import AdminLogin from "./AdminLogin";
 
 const tabs = [
   { id: "dashboard", name: "Dashboard", icon: LayoutDashboard },
+  { id: "analytics", name: "Analytics", icon: BarChart2 },
   { id: "products", name: "Products", icon: Package },
   { id: "categories", name: "Categories", icon: Tags },
   { id: "orders", name: "Orders", icon: ListOrdered },
@@ -35,6 +37,7 @@ export default function AdminLayout({ children }: { children?: React.ReactNode }
   const renderTab = () => {
     switch (activeTab) {
       case "dashboard": return <AdminDashboard />;
+      case "analytics": return <AnalyticsTab />;
       case "products": return <ProductsTab />;
       case "categories": return <CategoriesTab />;
       case "orders": return <OrdersTab />;

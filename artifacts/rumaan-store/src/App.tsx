@@ -15,6 +15,7 @@ import ProductDetail from "@/pages/ProductDetail";
 import ContactUs from "@/pages/ContactUs";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
+import OrderHistory from "@/pages/OrderHistory";
 import NotFound from "@/pages/not-found";
 
 // Admin Pages
@@ -52,6 +53,7 @@ function Router() {
       <StoreRoute path="/category" component={CategoryPage} />
       <StoreRoute path="/product/:id" component={ProductDetail} />
       <StoreRoute path="/contact" component={ContactUs} />
+      <StoreRoute path="/order-history" component={OrderHistory} />
       <StoreRoute path="/sign-in" component={SignIn} />
       <StoreRoute path="/sign-up" component={SignUp} />
 

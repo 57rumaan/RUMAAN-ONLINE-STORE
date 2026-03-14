@@ -6,12 +6,14 @@ import ordersRouter from "./orders";
 import reviewsRouter from "./reviews";
 import adminRouter from "./admin";
 import authRouter from "./auth";
+import productMediaRouter from "./productMedia";
 
 const router: IRouter = Router();
 
 router.use(authRouter);
 router.use(healthRouter);
 router.use(productsRouter);
+router.use(productMediaRouter);
 router.use(categoriesRouter);
 router.use(ordersRouter);
 router.use(reviewsRouter);
