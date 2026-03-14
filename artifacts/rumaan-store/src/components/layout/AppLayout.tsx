@@ -1,17 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, Search, ShoppingBag, X, User, ChevronRight } from "lucide-react";
+import { Menu, Search, ShoppingBag, X, User, ChevronRight, LogOut, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { user, logout, loading } = useAuth();
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close menu on route change
+  // Close menus on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setIsUserMenuOpen(false);
   }, [location]);
+
+  // Close user dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -58,19 +74,69 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-1 sm:gap-3">
+          <div className="flex items-center gap-1 sm:gap-2">
             <button className="p-2 text-foreground/80 hover:text-primary transition-colors rounded-full hover:bg-muted">
               <Search className="w-5 h-5" />
             </button>
-            <Link href="/admin" className="p-2 text-foreground/80 hover:text-primary transition-colors rounded-full hover:bg-muted hidden sm:block">
-              <User className="w-5 h-5" />
-            </Link>
-            <button className="p-2 text-foreground/80 hover:text-primary transition-colors rounded-full hover:bg-muted relative">
-              <ShoppingBag className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-[10px] font-bold text-primary-foreground flex items-center justify-center border-2 border-background">
-                0
-              </span>
-            </button>
+
+            {/* Auth area */}
+            {!loading && (
+              user ? (
+                /* Logged-in user dropdown */
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-muted transition-colors text-sm font-medium"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="hidden sm:block max-w-[100px] truncate">{user.name}</span>
+                  </button>
+
+                  <AnimatePresence>
+                    {isUserMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full mt-2 w-52 bg-card border border-border rounded-2xl shadow-xl py-2 z-50"
+                      >
+                        <div className="px-4 py-2 border-b border-border">
+                          <p className="text-sm font-semibold truncate">{user.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                        <button
+                          onClick={async () => { await logout(); setIsUserMenuOpen(false); }}
+                          className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                /* Sign in / Sign up */
+                <div className="flex items-center gap-1">
+                  <Link
+                    href="/sign-in"
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )
+            )}
           </div>
         </div>
       </header>
@@ -95,13 +161,27 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             >
               <div className="p-4 border-b flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white font-display font-bold">R</div>
+                  <ShoppingBag className="w-6 h-6 text-primary" />
                   <span className="font-display font-bold">Menu</span>
                 </div>
                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded-full hover:bg-muted">
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {/* User info in mobile menu */}
+              {user && (
+                <div className="px-4 py-3 border-b flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                </div>
+              )}
+
               <div className="flex-1 overflow-y-auto py-4">
                 <nav className="px-3 flex flex-col gap-1">
                   {navLinks.map((link) => (
@@ -119,7 +199,38 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       <ChevronRight className="w-4 h-4 opacity-50" />
                     </Link>
                   ))}
-                  <div className="my-4 border-t border-border" />
+
+                  <div className="my-3 border-t border-border" />
+
+                  {user ? (
+                    <button
+                      onClick={async () => { await logout(); setIsMobileMenuOpen(false); }}
+                      className="flex items-center justify-between px-4 py-3 rounded-xl text-destructive hover:bg-destructive/10 font-medium w-full text-left"
+                    >
+                      Sign Out
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <>
+                      <Link
+                        href="/sign-in"
+                        className="flex items-center justify-between px-4 py-3 rounded-xl text-foreground/80 hover:bg-muted font-medium"
+                      >
+                        Sign In
+                        <ChevronRight className="w-4 h-4 opacity-50" />
+                      </Link>
+                      <Link
+                        href="/sign-up"
+                        className="flex items-center justify-between px-4 py-3 rounded-xl bg-primary text-primary-foreground font-semibold mt-1"
+                      >
+                        Sign Up
+                        <ChevronRight className="w-4 h-4 opacity-50" />
+                      </Link>
+                    </>
+                  )}
+
+                  <div className="my-3 border-t border-border" />
+
                   <Link
                     href="/admin"
                     className="flex items-center justify-between px-4 py-3 rounded-xl text-foreground/80 hover:bg-muted font-medium"
@@ -143,12 +254,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <footer className="bg-card border-t border-border/50 py-12 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-             <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center text-white font-display font-bold text-xs">R</div>
-             <span className="font-display font-bold tracking-wider">RUMAAN STORE</span>
+            <ShoppingBag className="w-5 h-5 text-primary" />
+            <span className="font-display font-bold tracking-wider">57 RUMAAN STORE</span>
           </div>
           <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
             Your premium destination for mobile phones, gaming accessories, and exclusive deals in Pakistan.
           </p>
+          <div className="flex items-center justify-center gap-4 mb-6 text-sm">
+            <Link href="/sign-in" className="text-muted-foreground hover:text-primary transition-colors">Sign In</Link>
+            <span className="text-border">•</span>
+            <Link href="/sign-up" className="text-muted-foreground hover:text-primary transition-colors">Sign Up</Link>
+            <span className="text-border">•</span>
+            <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+          </div>
           <div className="text-xs text-muted-foreground/60">
             &copy; {new Date().getFullYear()} Rumaan Online Store. All rights reserved.
           </div>
