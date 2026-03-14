@@ -24,6 +24,7 @@ router.get("/orders", async (_req, res): Promise<void> => {
       customerName: ordersTable.customerName,
       customerPhone: ordersTable.customerPhone,
       customerAddress: ordersTable.customerAddress,
+      receiptImage: ordersTable.receiptImage,
       status: ordersTable.status,
       createdAt: ordersTable.createdAt,
     })
@@ -66,6 +67,7 @@ router.post("/orders", async (req, res): Promise<void> => {
       customerName: parsed.data.customerName,
       customerPhone: parsed.data.customerPhone,
       customerAddress: parsed.data.customerAddress,
+      receiptImage: parsed.data.receiptImage ?? null,
       status: "pending",
     })
     .returning();
@@ -98,6 +100,7 @@ router.get("/orders/:id", async (req, res): Promise<void> => {
       customerName: ordersTable.customerName,
       customerPhone: ordersTable.customerPhone,
       customerAddress: ordersTable.customerAddress,
+      receiptImage: ordersTable.receiptImage,
       status: ordersTable.status,
       createdAt: ordersTable.createdAt,
     })

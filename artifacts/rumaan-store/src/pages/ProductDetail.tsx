@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "wouter";
 import { useGetProduct, useGetCategories, useCreateOrder, useGetReviews, useCreateReview } from "@workspace/api-client-react";
 import { formatPKR } from "@/lib/utils";
 import { Button, Modal, Input, Textarea, Badge } from "@/components/ui";
-import { MessageCircle, ShoppingBag, Star, ChevronRight, CheckCircle2 } from "lucide-react";
+import { MessageCircle, ShoppingBag, Star, ChevronRight, CheckCircle2, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ProductDetail() {
@@ -22,6 +22,16 @@ export default function ProductDetail() {
   const [formData, setFormData] = useState({
     name: "", phone: "", address: "", receiptId: ""
   });
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleReceiptImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setReceiptImage(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const category = categories?.find(c => c.id === product?.categoryId);
   const isDeal = category?.name.toLowerCase().includes("deal");
@@ -42,10 +52,13 @@ export default function ProductDetail() {
           customerName: formData.name,
           customerPhone: formData.phone,
           customerAddress: formData.address,
-          receiptId: formData.receiptId
+          receiptId: formData.receiptId,
+          ...(receiptImage ? { receiptImage } : {})
         }
       });
       setIsBuyModalOpen(false);
+      setReceiptImage(null);
+      setFormData({ name: "", phone: "", address: "", receiptId: "" });
       toast({
         title: "Order Placed Successfully!",
         description: "We will verify your payment and process the order.",
@@ -247,7 +260,41 @@ export default function ProductDetail() {
               <label className="text-sm font-medium mb-1.5 block">Payment Receipt ID (TID)</label>
               <Input required value={formData.receiptId} onChange={e => setFormData(prev => ({...prev, receiptId: e.target.value}))} placeholder="e.g. 123456789012" />
             </div>
-            
+
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">
+                Payment Receipt Screenshot <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleReceiptImageChange}
+              />
+              {receiptImage ? (
+                <div className="relative mt-1">
+                  <img src={receiptImage} alt="Receipt preview" className="w-full max-h-48 object-contain rounded-xl border border-border bg-muted/30" />
+                  <button
+                    type="button"
+                    onClick={() => { setReceiptImage(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                    className="absolute top-2 right-2 bg-background/80 rounded-full p-1 border border-border hover:bg-muted transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl py-4 px-4 text-sm text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload receipt image
+                </button>
+              )}
+            </div>
+
             <div className="pt-4 flex justify-end gap-3">
               <Button type="button" variant="ghost" onClick={() => setIsBuyModalOpen(false)}>Cancel</Button>
               <Button type="submit" isLoading={createOrder.isPending}>Submit Order</Button>

@@ -15,6 +15,7 @@ export interface Order {
   customerName: string;
   customerPhone: string;
   customerAddress: string;
+  receiptImage?: string | null;
   status: string;
   createdAt: string;
 }

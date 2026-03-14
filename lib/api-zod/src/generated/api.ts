@@ -187,6 +187,7 @@ export const GetOrdersResponseItem = zod.object({
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
+  receiptImage: zod.string().nullable().optional(),
   status: zod.string(),
   createdAt: zod.string(),
 });
@@ -201,6 +202,7 @@ export const CreateOrderBody = zod.object({
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
+  receiptImage: zod.string().optional(),
 });
 
 /**
@@ -219,6 +221,7 @@ export const GetOrderResponse = zod.object({
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
+  receiptImage: zod.string().nullable().optional(),
   status: zod.string(),
   createdAt: zod.string(),
 });
@@ -243,6 +246,7 @@ export const UpdateOrderStatusResponse = zod.object({
   customerName: zod.string(),
   customerPhone: zod.string(),
   customerAddress: zod.string(),
+  receiptImage: zod.string().nullable().optional(),
   status: zod.string(),
   createdAt: zod.string(),
 });

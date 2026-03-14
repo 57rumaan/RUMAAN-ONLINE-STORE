@@ -12,4 +12,5 @@ export interface CreateOrderInput {
   customerName: string;
   customerPhone: string;
   customerAddress: string;
+  receiptImage?: string;
 }

@@ -9,6 +9,7 @@ export const ordersTable = pgTable("orders", {
   customerName: text("customer_name").notNull(),
   customerPhone: text("customer_phone").notNull(),
   customerAddress: text("customer_address").notNull(),
+  receiptImage: text("receipt_image"),
   status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

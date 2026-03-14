@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { useGetOrders, useUpdateOrderStatus } from "@workspace/api-client-react";
 import { Badge } from "@/components/ui";
 import { formatPKR } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { X } from "lucide-react";
 
 export default function OrdersTab() {
   const { data: orders, refetch } = useGetOrders();
   const updateStatus = useUpdateOrderStatus();
   const { toast } = useToast();
+  const [viewingReceipt, setViewingReceipt] = useState<string | null>(null);
 
   const handleStatusChange = async (id: number, status: string) => {
     try {
@@ -29,9 +32,11 @@ export default function OrdersTab() {
               <tr>
                 <th className="p-4 font-semibold">Order ID</th>
                 <th className="p-4 font-semibold">Customer</th>
+                <th className="p-4 font-semibold">Delivery Address</th>
                 <th className="p-4 font-semibold">Product</th>
                 <th className="p-4 font-semibold">Amount</th>
                 <th className="p-4 font-semibold">Receipt (TID)</th>
+                <th className="p-4 font-semibold">Receipt Image</th>
                 <th className="p-4 font-semibold">Status</th>
                 <th className="p-4 font-semibold">Date</th>
               </tr>
@@ -44,11 +49,28 @@ export default function OrdersTab() {
                     <div className="font-medium">{o.customerName}</div>
                     <div className="text-xs text-muted-foreground">{o.customerPhone}</div>
                   </td>
+                  <td className="p-4 max-w-[180px]">
+                    <div className="text-xs text-foreground/80 whitespace-pre-wrap">{o.customerAddress || "—"}</div>
+                  </td>
                   <td className="p-4">{o.productName}</td>
                   <td className="p-4">{formatPKR(o.productPrice)}</td>
-                  <td className="p-4 font-mono text-xs bg-muted/50 rounded px-2 py-1 inline-block mt-3">{o.receiptId}</td>
                   <td className="p-4">
-                    <select 
+                    <span className="font-mono text-xs bg-muted/50 rounded px-2 py-1 inline-block">{o.receiptId}</span>
+                  </td>
+                  <td className="p-4">
+                    {o.receiptImage ? (
+                      <button
+                        onClick={() => setViewingReceipt(o.receiptImage!)}
+                        className="text-xs text-primary underline hover:no-underline font-medium"
+                      >
+                        View Receipt
+                      </button>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">None</span>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <select
                       className="bg-background border border-border rounded-lg px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-primary/20 outline-none"
                       value={o.status}
                       onChange={(e) => handleStatusChange(o.id, e.target.value)}
@@ -64,13 +86,35 @@ export default function OrdersTab() {
               ))}
               {orders?.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-muted-foreground">No orders found.</td>
+                  <td colSpan={9} className="p-8 text-center text-muted-foreground">No orders found.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Receipt Image Lightbox */}
+      {viewingReceipt && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setViewingReceipt(null)}
+        >
+          <div className="relative max-w-lg w-full" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setViewingReceipt(null)}
+              className="absolute -top-10 right-0 text-white hover:text-white/70 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={viewingReceipt}
+              alt="Payment Receipt"
+              className="w-full rounded-2xl shadow-2xl object-contain max-h-[80vh]"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
