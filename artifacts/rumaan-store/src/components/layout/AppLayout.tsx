@@ -1,24 +1,60 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, Search, ShoppingBag, X, User, ChevronRight, LogOut, LogIn } from "lucide-react";
+import { Menu, Search, ShoppingBag, X, ChevronRight, LogOut, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGetProducts } from "@workspace/api-client-react";
+import { formatPKR } from "@/lib/utils";
+
+function useDebounce(value: string, delay: number) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [location] = useLocation();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [location, navigate] = useLocation();
   const { user, logout, loading } = useAuth();
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Close menus on route change
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
+  const { data: searchResults, isLoading: searchLoading } = useGetProducts(
+    { search: debouncedSearch || undefined },
+    { query: { enabled: debouncedSearch.length >= 2 } as any }
+  );
+
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
+    setIsSearchOpen(false);
   }, [location]);
 
-  // Close user dropdown on outside click
+  useEffect(() => {
+    if (isSearchOpen) {
+      setTimeout(() => searchInputRef.current?.focus(), 50);
+    } else {
+      setSearchQuery("");
+    }
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsSearchOpen(false);
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
@@ -28,6 +64,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  const handleSelectResult = (productId: number) => {
+    setIsSearchOpen(false);
+    navigate(`/product/${productId}`);
+  };
+
+  const showResults = debouncedSearch.length >= 2;
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -40,10 +83,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Header */}
       <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          
+
           {/* Left: Mobile Menu & Logo */}
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="lg:hidden p-2 -ml-2 text-foreground/80 hover:text-primary transition-colors"
             >
@@ -60,8 +103,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Center: Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link 
-                key={link.href} 
+              <Link
+                key={link.href}
                 href={link.href}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-primary",
@@ -75,14 +118,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
-            <button className="p-2 text-foreground/80 hover:text-primary transition-colors rounded-full hover:bg-muted">
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 text-foreground/80 hover:text-primary transition-colors rounded-full hover:bg-muted"
+              aria-label="Search products"
+            >
               <Search className="w-5 h-5" />
             </button>
 
             {/* Auth area */}
             {!loading && (
               user ? (
-                /* Logged-in user dropdown */
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -119,7 +165,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   </AnimatePresence>
                 </div>
               ) : (
-                /* Sign in / Sign up */
                 <div className="flex items-center gap-1">
                   <Link
                     href="/sign-in"
@@ -140,6 +185,112 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </header>
+
+      {/* Search Overlay */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
+              onClick={() => setIsSearchOpen(false)}
+            />
+
+            {/* Search Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4"
+            >
+              <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
+                {/* Input row */}
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+                  <Search className="w-5 h-5 text-muted-foreground shrink-0" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Search products…"
+                    className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setIsSearchOpen(false)}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-muted font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {/* Results */}
+                <div className="max-h-[60vh] overflow-y-auto">
+                  {!showResults && (
+                    <p className="text-sm text-muted-foreground text-center py-8 px-4">
+                      Type at least 2 characters to search
+                    </p>
+                  )}
+
+                  {showResults && searchLoading && (
+                    <div className="space-y-1 p-2">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />
+                      ))}
+                    </div>
+                  )}
+
+                  {showResults && !searchLoading && searchResults?.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-8 px-4">
+                      No products found for "<strong>{debouncedSearch}</strong>"
+                    </p>
+                  )}
+
+                  {showResults && !searchLoading && searchResults && searchResults.length > 0 && (
+                    <ul className="p-2">
+                      {searchResults.map(product => (
+                        <li key={product.id}>
+                          <button
+                            onClick={() => handleSelectResult(product.id)}
+                            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl hover:bg-muted transition-colors text-left"
+                          >
+                            <img
+                              src={product.imageUrl}
+                              alt={product.name}
+                              className="w-10 h-10 rounded-lg object-cover bg-muted shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{product.name}</p>
+                              <p className="text-xs text-muted-foreground">{product.categoryName}</p>
+                            </div>
+                            {product.categoryName?.toLowerCase() !== "deals" && (
+                              <span className="text-sm font-semibold text-primary shrink-0">
+                                {formatPKR(product.price)}
+                              </span>
+                            )}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Mobile Drawer */}
       <AnimatePresence>
@@ -169,7 +320,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
 
-              {/* User info in mobile menu */}
               {user && (
                 <div className="px-4 py-3 border-b flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
@@ -190,8 +340,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       href={link.href}
                       className={cn(
                         "flex items-center justify-between px-4 py-3 rounded-xl transition-colors",
-                        location === link.href 
-                          ? "bg-primary/10 text-primary font-semibold" 
+                        location === link.href
+                          ? "bg-primary/10 text-primary font-semibold"
                           : "text-foreground/80 hover:bg-muted hover:text-foreground font-medium"
                       )}
                     >
@@ -228,7 +378,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       </Link>
                     </>
                   )}
-
                 </nav>
               </div>
             </motion.div>
