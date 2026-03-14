@@ -21,8 +21,8 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Phone</h4>
-                  <p className="text-primary-foreground/80">+92-300-1234567</p>
-                  <p className="text-sm text-primary-foreground/60 mt-1">Mon-Fri from 9am to 6pm</p>
+                  <p className="text-primary-foreground/80">+92-313-1307143</p>
+                  <p className="text-sm text-primary-foreground/60 mt-1">Mon-Fri from 9am to 12am</p>
                 </div>
               </div>
 
@@ -32,7 +32,7 @@ export default function ContactUs() {
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Email</h4>
-                  <p className="text-primary-foreground/80">rumaanonlinestore@gmail.com</p>
+                  <p className="text-primary-foreground/80">57rumaan@gmail.com</p>
                   <p className="text-sm text-primary-foreground/60 mt-1">We'll respond within 24 hours</p>
                 </div>
               </div>
@@ -44,8 +44,8 @@ export default function ContactUs() {
                 <div>
                   <h4 className="font-semibold mb-1">Address</h4>
                   <p className="text-primary-foreground/80 leading-relaxed">
-                    Shop #15, Main Market<br/>
-                    Lahore, Pakistan
+                    MULTAN<br/>
+                   
                   </p>
                 </div>
               </div>

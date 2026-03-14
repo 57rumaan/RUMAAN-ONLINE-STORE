@@ -225,8 +225,8 @@ export default function ProductDetail() {
           <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl text-sm">
             <p className="font-semibold text-primary mb-2">Please transfer {formatPKR(product.price)} to one of the following accounts:</p>
             <ul className="space-y-1 text-foreground/80 list-disc list-inside">
-              <li><strong>HBL:</strong> 0123-4567890-1 (Rumaan Khan)</li>
-              <li><strong>Meezan Bank:</strong> 1234567890 (Rumaan Store)</li>
+              <li><strong>EASYPAISA:</strong> 03131307143 (Rumaan Khan)</li>
+              <li><strong>SADAPAY:</strong> 03131307143 (Rumaan Store)</li>
             </ul>
           </div>
 
