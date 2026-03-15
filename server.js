@@ -4,11 +4,10 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// serve frontend
-app.use(express.static(path.join(__dirname, "artifacts/rumaan-store")));
+app.use(express.static(path.join(__dirname, "artifacts/rumaan-store/dist")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "artifacts/rumaan-store/index.html"));
+  res.sendFile(path.join(__dirname, "artifacts/rumaan-store/dist/index.html"));
 });
 
 app.listen(PORT, () => {
